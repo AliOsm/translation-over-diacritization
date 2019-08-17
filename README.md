@@ -70,7 +70,9 @@ sh 8_calculate_bleu.sh
 ## Model Structure
 
 The following figure shows the model structure in a clearer way.
-![model-structure](model_representation.png)
+<p align="center">
+  <img src="model_representation.png">
+</p>
 
 #### Note: All codes in this repository tested on [Ubuntu 18.04](http://releases.ubuntu.com/18.04)
 
