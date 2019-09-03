@@ -40,9 +40,11 @@ if __name__ == '__main__':
     for (dirpath, dirnames, filenames) in walk(args.tmx_dir):
         for filename in filenames:
             files.append(join(args.tmx_dir, filename))
-    
+
     data = list()
+    print(files)
     for file in files:
+        if '.keep' in file: continue
         print('Processing %s corpus' % file.split(sep)[-1].split('.')[0])
         tree = ET.parse(file)
         root = tree.getroot()
