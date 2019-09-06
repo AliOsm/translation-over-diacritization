@@ -1,5 +1,6 @@
 import os
 import time
+import argparse
 import numpy as np
 import tensorflow as tf
 
@@ -7,8 +8,12 @@ from tqdm import tqdm
 
 # Constants
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--use-diacs', choices=['True', 'False'])
+args = parser.parse_args()
+
 TRAIN = True
-USE_DIACS = True
+USE_DIACS = (args.use_diacs == 'True')
 BATCH_SIZE = 256
 EPOCHS = 50
 EMBEDDINGS_DIM = 64
