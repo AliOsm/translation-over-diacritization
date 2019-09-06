@@ -17,7 +17,7 @@ echo "Extract Train and Test Data"
 paste -d "\t" data_dir/ar.seg data_dir/en.seg > data_dir/merged
 head -n 10000 data_dir/merged > data_dir/test
 tail -n 990000 data_dir/merged > data_dir/train
-rm data_dir/merged data_dir/ar.seg data_dir/en.seg data_dir/ar.codes data_dir/en.codes 
+rm data_dir/merged data_dir/ar.seg data_dir/en.seg data_dir/ar.codes data_dir/en.codes
 
 awk -F"\t" '{print $1}' data_dir/test > data_dir/ar.bpe.test
 awk -F"\t" '{print $2}' data_dir/test > data_dir/en.bpe.test

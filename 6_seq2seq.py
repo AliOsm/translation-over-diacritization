@@ -41,11 +41,11 @@ def create_dataset():
     ar_lines = open('data_dir/ar.bpe.train').read().strip().split('\n')
     for idx in range(len(ar_lines)):
         ar_lines[idx] = '<start> ' + ar_lines[idx].strip() + ' <end>'
-    
+
     en_lines = open('data_dir/en.bpe.train').read().strip().split('\n')
     for idx in range(len(en_lines)):
         en_lines[idx] = '<start> ' + en_lines[idx].strip() + ' <end>'
-    
+
     if USE_DIACS:
         ar_diac_lines = open('data_dir/ar-diac.bpe.train').read().strip().split('\n')
         for idx in range(len(ar_diac_lines)):
@@ -53,7 +53,7 @@ def create_dataset():
             ar_diac_lines[idx] = '<start> ' + ar_diac_lines[idx] + ' <end>'
 
         return ar_lines, ar_diac_lines, en_lines
-    
+
     return ar_lines, en_lines
 
 if USE_DIACS:
@@ -81,7 +81,7 @@ def load_dataset():
 
     ar_tensor, ar_lang_tokenizer = tokenize(ar_lang)
     en_tensor, en_lang_tokenizer = tokenize(en_lang)
-    
+
     if USE_DIACS:
         ar_diac_tensor, ar_diac_lang_tokenizer = tokenize(ar_diac_lang)
         return ar_tensor, ar_diac_tensor, en_tensor, ar_lang_tokenizer, ar_diac_lang_tokenizer, en_lang_tokenizer
@@ -90,7 +90,11 @@ def load_dataset():
 
 if USE_DIACS:
     ar_tensor, ar_diac_tensor, en_tensor, ar_lang, ar_diac_lang, en_lang = load_dataset()
-    max_length_ar, max_length_ar_diac, max_length_en = max_length(ar_tensor), max_length(ar_diac_tensor), max_length(en_tensor)
+
+    max_length_ar = max_length(ar_tensor)
+    max_length_ar_diac = max_length(ar_diac_tensor)
+    max_length_en = max_length(en_tensor)
+
     print(max_length_ar, max_length_ar_diac, max_length_en)
 else:
     ar_tensor, en_tensor, ar_lang, en_lang = load_dataset()
@@ -147,7 +151,8 @@ if USE_DIACS:
         def call(self, ar, ar_diac, hidden):
             ar = self.ar_embedding(ar)
             ar_diac = self.ar_diac_embedding(ar_diac)
-            output, state_fh, state_fc, state_bh, state_bc = self.lstm(tf.keras.layers.concatenate([ar, ar_diac]), initial_state=hidden)
+            output, state_fh, state_fc, state_bh, state_bc =
+                                    self.lstm(tf.keras.layers.concatenate([ar, ar_diac]), initial_state=hidden)
             state = tf.keras.layers.concatenate([state_fh, state_fc, state_bh, state_bc])
             return output, state
 
@@ -310,7 +315,7 @@ if TRAIN:
 
 def evaluate(sequences):
     attention_plot = np.zeros((max_length_en, max_length_ar))
-    
+
     for idx in range(len(sequences)):
         sequences[idx] = '<start> ' + sequences[idx] + ' <end>'
 
@@ -321,20 +326,16 @@ def evaluate(sequences):
                 ar.append(ar_lang.word_index[i])
             else:
                 ar.append(0)
-        ar = tf.keras.preprocessing.sequence.pad_sequences([ar],
-                                                                                                             maxlen=max_length_ar,
-                                                                                                             padding='post')
+        ar = tf.keras.preprocessing.sequence.pad_sequences([ar], maxlen=max_length_ar, padding='post')
         ar = tf.convert_to_tensor(ar)
-        
+
         ar_diac = list()
         for i in sequences[1].split():
             if i in ar_diac_lang.word_index:
                 ar_diac.append(ar_diac_lang.word_index[i])
             else:
                 ar_diac.append(ar_diac_lang.word_index['<none>'])
-        ar_diac = tf.keras.preprocessing.sequence.pad_sequences([ar_diac],
-                                                                                                                        maxlen=max_length_ar_diac,
-                                                                                                                        padding='post')
+        ar_diac = tf.keras.preprocessing.sequence.pad_sequences([ar_diac], maxlen=max_length_ar_diac, padding='post')
         ar_diac = tf.convert_to_tensor(ar_diac)
     else:
         ar = list()
@@ -343,9 +344,7 @@ def evaluate(sequences):
                 ar.append(ar_lang.word_index[i])
             else:
                 ar.append(0)
-        ar = tf.keras.preprocessing.sequence.pad_sequences([ar],
-                                                                                                             maxlen=max_length_ar,
-                                                                                                             padding='post')
+        ar = tf.keras.preprocessing.sequence.pad_sequences([ar], maxlen=max_length_ar, padding='post')
         ar = tf.convert_to_tensor(ar)
 
     result = ''
@@ -360,9 +359,7 @@ def evaluate(sequences):
     dec_input = tf.expand_dims([en_lang.word_index['<start>']], 0)
 
     for t in range(max_length_en):
-        predictions, dec_hidden, attention_weights = decoder(dec_input,
-                                                                                                                 dec_hidden,
-                                                                                                                 enc_out)
+        predictions, dec_hidden, attention_weights = decoder(dec_input, dec_hidden, enc_out)
 
         attention_weights = tf.reshape(attention_weights, (-1, ))
         attention_plot[t] = attention_weights.numpy()
@@ -395,7 +392,7 @@ with open(test_file, 'r') as file:
 result = list()
 for line in tqdm(test_lines):
     line = line.strip()
-    
+
     if USE_DIACS:
         sequences = list()
         sequences.append(remove_diacritics(line))
@@ -405,7 +402,7 @@ for line in tqdm(test_lines):
         sequences.append(' '.join(diacss))
     else:
         sequences = [line]
-    
+
     result.append(translate(sequences))
 
 with open(test_file + '.predictions', 'w') as file:

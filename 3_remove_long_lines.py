@@ -14,13 +14,13 @@ if __name__ == '__main__':
 
         with open(join(args.data_dir, 'ar.bpe.%s' % dataset_split), 'r') as file:
             ar_bpe_lines = file.readlines()
-        
+
         with open(join(args.data_dir, 'en.org.%s' % dataset_split), 'r') as file:
             en_org_lines = file.readlines()
-        
+
         with open(join(args.data_dir, 'en.bpe.%s' % dataset_split), 'r') as file:
             en_bpe_lines = file.readlines()
-        
+
         lines = zip(ar_org_lines, ar_bpe_lines, en_org_lines, en_bpe_lines)
 
         ar_org_lines = list()
@@ -42,9 +42,11 @@ if __name__ == '__main__':
 
         with open(join(args.data_dir, 'ar.bpe.%s' % dataset_split), 'w') as file:
             file.write('\n'.join(ar_bpe_lines))
-        
+
         with open(join(args.data_dir, 'en.org.%s' % dataset_split), 'w') as file:
             file.write('\n'.join(en_org_lines))
-        
+
         with open(join(args.data_dir, 'en.bpe.%s' % dataset_split), 'w') as file:
             file.write('\n'.join(en_bpe_lines))
+
+    print("Done!")

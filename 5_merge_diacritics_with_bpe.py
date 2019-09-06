@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
         with open(join(args.data_dir, bpe_file_name), 'r') as file:
             bpe_lines = file.readlines()
-        
+
         with open(join(args.data_dir, diac_org_file_name), 'r') as file:
             diac_org_lines = file.readlines()
 
