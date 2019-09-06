@@ -1,75 +1,83 @@
 # Translation-over-Diacritization
 
-This repository contains the Translation-over-Diacritization technique implementation used in our paper on Arabic Text Diacritization:
+This repository contains the implementation for the Translation-over-Diacritization technique descriped in our paper on Arabic Text Diacritization:
 
 "Neural Arabic Text Diacritization: Outperforming State of the Art Using FFNN and RNN", Ali Fadel, Ibraheem Tuffaha, Mahmoud Al-Ayyoub and Bara' Al-Jawarneh, [ACL 2019](http://www.acl2019.org).
 
+The work uses diacritics to improve the results of Arabic->English translation while avoiding vocabulary sparsity that leads to out-of-vocabulary issues.
+
 ## 0. Prerequisites
-- Python 3.6.8
-- Packages listed in `requirements.txt` file
-- Download the following Arabic-English parallel corpora from [OPUS](http://opus.nlpl.eu) project and extract them in `data_dir/tmx` folder:
-  - [GlobalVoices v2017q3](https://object.pouta.csc.fi/OPUS-GlobalVoices/v2017q3/tmx/ar-en.tmx.gz)
-  - [MultiUN v1](https://object.pouta.csc.fi/OPUS-MultiUN/v1/tmx/ar-en.tmx.gz)
-  - [News-Commentary v11](https://object.pouta.csc.fi/OPUS-News-Commentary/v11/tmx/ar-en.tmx.gz)
-  - [Tatoeba v2](https://object.pouta.csc.fi/OPUS-Tatoeba/v2/tmx/ar-en.tmx.gz)
-  - [TED2013 v1.1](https://object.pouta.csc.fi/OPUS-TED2013/v1.1/tmx/ar-en.tmx.gz)
-  - [Ubuntu v14.10](https://object.pouta.csc.fi/OPUS-Ubuntu/v14.10/tmx/ar-en.tmx.gz)
-  - [Wikipedia v1.0](https://object.pouta.csc.fi/OPUS-Wikipedia/v1.0/tmx/ar-en.tmx.gz)
-- Clone [Shakkelha](https://github.com/AliOsm/shakkelha) and place it in the same folder with this repository
-- Clone [mosesdecoder](https://github.com/moses-smt/mosesdecoder) and place it in the same folder with this repository
+- Tested with Python 3.6.8
+- Install required packages listed in `requirements.txt` file
+    - `pip install -r requirements.txt`
+- Download and unzip the Arabic-English parallel corpora from [OPUS](http://opus.nlpl.eu) project and extract them in `data_dir/tmx` folder
+  - `WEBSITE_LINK=https://object.pouta.csc.fi`
+  - `wget "$WEBSITE_LINK"/OPUS-GlobalVoices/v2017q3/tmx/ar-en.tmx.gz -O GlobalVoices_v2017q3.tmx.gz`
+  - `wget "$WEBSITE_LINK"/OPUS-MultiUN/v1/tmx/ar-en.tmx.gz -O MultiUN_v1.tmx.gz`
+  - `wget "$WEBSITE_LINK"/OPUS-News-Commentary/v11/tmx/ar-en.tmx.gz -O News-Commentary_v11.tmx.gz`
+  - `wget "$WEBSITE_LINK"/OPUS-Tatoeba/v2/tmx/ar-en.tmx.gz -O Tatoeba_v2.tmx.gz`
+  - `wget "$WEBSITE_LINK"/OPUS-TED2013/v1.1/tmx/ar-en.tmx.gz -O TED2013_v1.1.tmx.gz`
+  - `wget "$WEBSITE_LINK"/OPUS-Ubuntu/v14.10/tmx/ar-en.tmx.gz -O Ubuntu_v14.10.tmx.gz`
+  - `wget "$WEBSITE_LINK"/OPUS-Wikipedia/v1.0/tmx/ar-en.tmx.gz -O Wikipedia_v1.0.tmx.gz`
+  - `mv *.gz data_dir/tmx`
+  - `gunzip data_dir/tmx/*.gz`
+- Clone both [Shakkelha](https://github.com/AliOsm/shakkelha) and [mosesdecoder](https://github.com/moses-smt/mosesdecoder) dependency repositories
+  - `git clone https://github.com/AliOsm/shakkelha.git`
+  - `git clone https://github.com/moses-smt/mosesdecoder.git`
 
 ## 1. Data Extraction
-To extract the data run the following command:
+To extract the data, run the following command:
 ```
 python 1_extract_data.py
 ```
 
 ## 2. Data Preparing and Splitting
-To prepare, segment (using Byte Pair Encoding), and split the data into training and testing run the following command:
+To prepare, segment (using Byte Pair Encoding), and split the data into training and testing, run the following command:
 ```
 sh 2_prepare_data.sh
 ```
 
 ## 3. Remove Long Lines
-Little lines gains a lot of tokens after the segmentation process in step 2, so run the following command to remove them:
+Some lines gain a lot of tokens after the segmentation process in step 2, so run the following command to remove them:
 ```
 python 3_remove_long_lines.py
 ```
 
 ## 4. Diacritize Arabic Data
-To diacritize the Arabic data extracted in step 1 run the following command:
+To diacritize the Arabic data extracted in step 1, run the following command:
 ```
 sh 4_diacritize_ar_data.sh
 ```
 
 ## 5. Merge Diacritics with Segmented Text
-To merge the diacritics from the diacritized Arabic text gained from step 4 with the segmented Arabic text run the following command:
+To merge the diacritics from the diacritized Arabic text generated from step 4 with the segmented Arabic text from step 2, run the following command:
 ```
 python 5_merge_diacritics_with_bpe.py
 ```
 
 ## 6. Train the Model
-To train the model run the following command:
+To train the model, run the following command:
 ```
-python 6_seq2seq.py
+python 6_seq2seq.py --use-diacs True
+python 6_seq2seq.py --use-diacs False
 ```
-You can choose to train the model with or without diacritics by changing the value of `USE_DIACS` constant.
+The value of the boolean parameter `USE_DIACS` determines whether to train the model with or without diacritics.
 
-## 7. Untokenize Predicted Translations (Remove BPE special characters)
-To untokenize the predicted translations run the following command:
+## 7. Detokenize Predicted Translations (Remove BPE special characters)
+To detokenize the predicted translations, run the following command:
 ```
-sh 7_untok_predictions.sh
+sh 7_detok_predictions.sh
 ```
 
 ## 8. Calculate BLEU scores
-To calculate the BLEU scores run the following command:
+To calculate the BLEU scores, run the following command:
 ```
 sh 8_calculate_bleu.sh
 ```
 
 ## Model Structure
 
-The following figure shows the model structure in a clearer way.
+The following figure illustrates our model structure
 <p align="center">
   <img src="model_representation.png">
 </p>
