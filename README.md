@@ -2,7 +2,7 @@
 
 This repository contains the implementation for the Translation-over-Diacritization technique descriped in our paper on Arabic Text Diacritization:
 
-"Neural Arabic Text Diacritization: Outperforming State of the Art Using FFNN and RNN", Ali Fadel, Ibraheem Tuffaha, Mahmoud Al-Ayyoub and Bara' Al-Jawarneh, [ACL 2019](http://www.acl2019.org).
+"Neural Arabic Text Diacritization: State of the Art Results and a Novel Approach for Machine Translation", Ali Fadel, Ibraheem Tuffaha, Bara' Al-Jawarneh and Mahmoud Al-Ayyoub, [EMNLP-IJCNLP 2019](https://www.emnlp-ijcnlp2019.org).
 
 The work uses diacritics to improve the results of Arabic->English translation while avoiding vocabulary sparsity that leads to out-of-vocabulary issues.
 
