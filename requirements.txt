@@ -1,5 +1,5 @@
 numpy==1.16.4
 PyArabic==0.6.5
 subword-nmt==0.3.6
-tensorflow-gpu==2.0.0b1
+tensorflow-gpu==2.5.1
 tqdm==4.31.1
